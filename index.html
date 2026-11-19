@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="hi" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>हिमांशु डेयरी फ़ार्म - सम्पूर्ण दुग्ध एवं पशु प्रबंधन प्रणाली</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dairy: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-hindi">
+
+  <!-- ============================================================== -->
+  <!-- TOP NAVIGATION & BRAND HEADER                                  -->
+  <!-- ============================================================== -->
+  <header class="glass-header sticky top-0 z-40 border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20">
+        
+        <!-- Logo & Dairy Name -->
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+          <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-emerald-800 to-emerald-600 text-white flex items-center justify-center text-2xl shadow-md ring-2 ring-emerald-200">
+            🥛
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h1 id="headerDairyName" class="text-lg sm:text-xl font-extrabold text-emerald-950 tracking-tight">
+                हिमांशु डेयरी फ़ार्म
+              </h1>
+              <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                PRO Dairy
+              </span>
+            </div>
+            <p id="headerOwner" class="text-xs text-slate-500 font-medium">
+              संचालक: हिमांशु जी • दुग्ध एवं पशु प्रबंधन
+            </p>
+          </div>
+        </div>
+
+        <!-- Quick Header Actions -->
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          <!-- Quick Milk Entry Button -->
+          <button onclick="openMilkModal('collection')" class="flex items-center space-x-1.5 px-3 py-2 sm:px-4 sm:py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition transform active:scale-95">
+            <span class="text-base sm:text-lg">➕</span>
+            <span>दूध दर्ज करें</span>
+          </button>
+
+          <!-- Backup / Settings Shortcut -->
+          <button onclick="exportDataBackup()" title="डेटा बैकअप डाउनलोड करें" class="p-2 sm:p-2.5 text-slate-600 hover:text-emerald-700 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+            💾
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Navigation Tabs Bar -->
+      <nav class="flex space-x-1 sm:space-x-2 overflow-x-auto py-2.5 border-t border-slate-100 no-scrollbar text-xs sm:text-sm font-semibold">
+        <button data-tab-target="dashboard" class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-700 text-white transition whitespace-nowrap shadow-sm">
+          <span>📊</span>
+          <span>डैशबोर्ड (Overview)</span>
+        </button>
+        <button data-tab-target="milk" class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
+          <span>🥛</span>
+          <span>दूध का हिसाब (Milk)</span>
+        </button>
+        <button data-tab-target="cattle" class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
+          <span>🐃</span>
+          <span>भैंस व पशु प्रबंधन (Cattle)</span>
+        </button>
+        <button data-tab-target="khata" class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
+          <span>📒</span>
+          <span>खाता बही (Khata Book)</span>
+        </button>
+        <button data-tab-target="expenses" class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
+          <span>🌾</span>
+          <span>खर्चा व चारा (Expenses)</span>
+        </button>
+        <button data-tab-target="tools" class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
+          <span>⚙️</span>
+          <span>टूल्स व सेटिंग्स (Tools)</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============================================================== -->
+  <!-- MAIN CONTAINER                                                 -->
+  <!-- ============================================================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ============================================================ -->
+    <!-- 1. DASHBOARD TAB                                             -->
+    <!-- ============================================================ -->
+    <section id="tab-dashboard" class="tab-content active space-y-6">
+      
+      <!-- Top Alert / Welcome Banner -->
+      <div class="bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 text-white rounded-2xl p-5 sm:p-6 shadow-md relative overflow-hidden">
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center space-x-1.5 bg-emerald-500/20 text-emerald-200 text-xs px-2.5 py-0.5 rounded-full mb-2">
+              <span>🟢</span> <span>डेयरी प्रणाली सक्रिय (Dairy Live)</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-black">राम-राम हिमांशु जी! आज का डेयरी हिसाब</h2>
+            <p class="text-emerald-100 text-xs sm:text-sm mt-1 max-w-xl">
+              आज के दूध का संकलन, ग्राहकों की सप्लाई, भैंसों का स्वास्थ्य और बहीखाता सब एक नज़र में देखें।
+            </p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="openMilkModal('collection')" class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold text-xs sm:text-sm rounded-xl shadow transition">
+              + दूध ख़रीद दर्ज करें
+            </button>
+            <button onclick="openMilkModal('sale')" class="px-3.5 py-2 bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm rounded-xl border border-white/20 transition">
+              + दूध बिक्री दर्ज करें
+            </button>
+          </div>
+        </div>
+        <!-- Decorative Background Milk Splash Icon -->
+        <div class="absolute -right-4 -bottom-8 opacity-10 text-9xl select-none pointer-events-none">
+          🥛
+        </div>
+      </div>
+
+      <!-- Quick KPI Metric Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+        
+        <!-- Card 1: Today's Collection -->
+        <div class="dairy-card bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">आज का दूध संकलन</span>
+            <span class="p-2 bg-blue-50 text-blue-700 rounded-xl text-lg">📥</span>
+          </div>
+          <div class="mt-3">
+            <div id="dashColLiters" class="text-2xl sm:text-3xl font-black text-slate-900">0.0 L</div>
+            <p id="dashColAmt" class="text-xs text-blue-600 font-semibold mt-0.5">लागत: ₹0</p>
+          </div>
+        </div>
+
+        <!-- Card 2: Today's Sales -->
+        <div class="dairy-card bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">आज की दूध बिक्री</span>
+            <span class="p-2 bg-emerald-50 text-emerald-700 rounded-xl text-lg">📤</span>
+          </div>
+          <div class="mt-3">
+            <div id="dashSaleLiters" class="text-2xl sm:text-3xl font-black text-emerald-900">0.0 L</div>
+            <p id="dashSaleAmt" class="text-xs text-emerald-600 font-semibold mt-0.5">कमाई: ₹0</p>
+          </div>
+        </div>
+
+        <!-- Card 3: Total Cattle -->
+        <div class="dairy-card bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">कुल भैंसें व पशु</span>
+            <span class="p-2 bg-amber-50 text-amber-700 rounded-xl text-lg">🐃</span>
+          </div>
+          <div class="mt-3">
+            <div id="dashCattleCount" class="text-2xl sm:text-3xl font-black text-slate-900">0 पशु</div>
+            <p id="dashCattleSub" class="text-xs text-amber-700 font-semibold mt-0.5 truncate">0 दुधारू, 0 गाभिन</p>
+          </div>
+        </div>
+
+        <!-- Card 4: Estimated Net Today -->
+        <div class="dairy-card bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">आज का अनुमानित लाभ</span>
+            <span class="p-2 bg-teal-50 text-teal-700 rounded-xl text-lg">💰</span>
+          </div>
+          <div class="mt-3">
+            <div id="dashNetProfit" class="text-2xl sm:text-3xl font-black text-emerald-700">₹0</div>
+            <p class="text-xs text-slate-400 font-medium mt-0.5">बिक्री - ख़रीद लागत</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Outstanding Balances Bar -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-rose-50 border border-rose-100 rounded-2xl p-4 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold text-rose-800 uppercase tracking-wide">मार्केट उधारी (ग्राहकों से लेना है)</span>
+            <div id="dashReceivable" class="text-2xl font-black text-rose-900 mt-1">₹0</div>
+            <p class="text-xs text-rose-600 mt-0.5">कुल 5 ग्राहकों की उधारी बाकी</p>
+          </div>
+          <button onclick="switchTab('khata')" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
+            तकादा सूची देखें →
+          </button>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold text-amber-800 uppercase tracking-wide">किसानों का भुगतान (देना है)</span>
+            <div id="dashPayable" class="text-2xl font-black text-amber-900 mt-1">₹0</div>
+            <p class="text-xs text-amber-700 mt-0.5">दूध संकलन का बकाया</p>
+          </div>
+          <button onclick="switchTab('khata')" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
+            किसान खाता देखें →
+          </button>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 7-Day Trend Chart -->
+        <div class="lg:col-span-2 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">साप्ताहिक दूध संकलन व बिक्री (Last 7 Days)</h3>
+              <p class="text-xs text-slate-500">प्रतिदिन के संकलन व बिक्री का तुलनात्मक ग्राफ</p>
+            </div>
+            <span class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium">लीटर्स में</span>
+          </div>
+          <div class="h-64 sm:h-72">
+            <canvas id="weeklyMilkChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Cattle Distribution Pie Chart -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">पशु स्थिति विभाजन (Cattle Status)</h3>
+            <p class="text-xs text-slate-500">दुधारू, गाभिन, बीमार व सूखी भैंसें</p>
+          </div>
+          <div class="h-56 my-auto">
+            <canvas id="cattlePieChart"></canvas>
+          </div>
+          <div class="pt-3 border-t border-slate-100 text-center">
+            <button onclick="switchTab('cattle')" class="text-xs font-bold text-emerald-700 hover:text-emerald-800">
+              सभी भैंसों का रिकॉर्ड देखें →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Milk Entries Preview Table -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">हाल की दूध प्रविष्टियां (Recent Milk Entries)</h3>
+            <p class="text-xs text-slate-500">नवीनतम संकलन व बिक्री रिकॉर्ड</p>
+          </div>
+          <button onclick="switchTab('milk')" class="text-xs font-bold text-emerald-700 hover:text-emerald-800">
+            पूरा रजिस्टर देखें →
+          </button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+                <th class="py-3 px-4">दिनांक व पारी</th>
+                <th class="py-3 px-4">प्रकार</th>
+                <th class="py-3 px-4">किसान / ग्राहक</th>
+                <th class="py-3 px-4">मात्रा</th>
+                <th class="py-3 px-4">फैट %</th>
+                <th class="py-3 px-4">रुपया</th>
+                <th class="py-3 px-4">पर्ची</th>
+              </tr>
+            </thead>
+            <tbody id="dashRecentTableBody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 2. MILK COLLECTION & SALE TAB (दूध का हिसाब)                 -->
+    <!-- ============================================================ -->
+    <section id="tab-milk" class="tab-content space-y-5">
+      
+      <!-- Milk Management Header & Filter Bar -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-black text-slate-900">दूध संकलन व बिक्री रजिस्टर</h2>
+            <p class="text-xs text-slate-500">किसान से ख़रीद, फ़ार्म का दूध, और ग्राहकों की दैनिक सप्लाई का पूर्ण हिसाब</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="openMilkModal('collection')" class="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow transition">
+              + नया संकलन (ख़रीद)
+            </button>
+            <button onclick="openMilkModal('sale')" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow transition">
+              + नई बिक्री (सप्लाई)
+            </button>
+          </div>
+        </div>
+
+        <!-- Filters Row -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2.5 pt-3 border-t border-slate-100">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">पारी (Shift)</label>
+            <select id="filterShift" onchange="renderMilkEntries()" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500">
+              <option value="all">सभी पारियां (All Shifts)</option>
+              <option value="Morning">सुबह (Morning)</option>
+              <option value="Evening">शाम (Evening)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">प्रकार (Flow)</label>
+            <select id="filterFlow" onchange="renderMilkEntries()" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500">
+              <option value="all">सभी लेन-देन (All)</option>
+              <option value="collection">संकलन / ख़रीद</option>
+              <option value="farm_production">फ़ार्म उत्पादन</option>
+              <option value="sale">बिक्री / सप्लाई</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">तारीख (Date)</label>
+            <input type="date" id="filterDate" onchange="renderMilkEntries()" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500">
+          </div>
+
+          <div class="col-span-2 sm:col-span-1 lg:col-span-2 flex items-end justify-end space-x-2">
+            <button onclick="document.getElementById('filterDate').value=''; renderMilkEntries();" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition">
+              रीसेट
+            </button>
+            <button onclick="exportMilkToCSV()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-sm">
+              <span>📊 Excel / CSV डाउनलोड</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Milk Entries Table -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
+                <th class="py-3 px-3">दिनांक/पारी</th>
+                <th class="py-3 px-3">प्रकार</th>
+                <th class="py-3 px-3">नाम (किसान/ग्राहक)</th>
+                <th class="py-3 px-3">पशु</th>
+                <th class="py-3 px-3">मात्रा</th>
+                <th class="py-3 px-3">फैट / SNF</th>
+                <th class="py-3 px-3">दर (₹/L)</th>
+                <th class="py-3 px-3">कुल राशि</th>
+                <th class="py-3 px-3">भुगतान</th>
+                <th class="py-3 px-3 text-right">कार्य (Action)</th>
+              </tr>
+            </thead>
+            <tbody id="milkTableBody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 3. CATTLE MANAGEMENT TAB (भैंस व पशु प्रबंधन)              -->
+    <!-- ============================================================ -->
+    <section id="tab-cattle" class="tab-content space-y-5">
+      
+      <!-- Cattle Header & Filters -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-black text-slate-900">भैंस व पशु प्रबंधन (Livestock Profile)</h2>
+            <p id="cattleSummaryStats" class="text-xs text-slate-500 font-medium">कुल पशु: गणना हो रही है...</p>
+          </div>
+          <button onclick="openCattleModal()" class="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow transition flex items-center space-x-1.5 self-start sm:self-auto">
+            <span>➕</span>
+            <span>नई भैंस / पशु जोड़ें</span>
+          </button>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-3 pt-3 border-t border-slate-100">
+          <div>
+            <input type="text" id="searchCattle" oninput="renderCattle()" placeholder="🔍 नाम, टैग नं. या नस्ल खोजें..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500">
+          </div>
+          <div>
+            <select id="filterCattleStatus" onchange="renderCattle()" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500">
+              <option value="all">सभी स्थितियां (All Status)</option>
+              <option value="milking">दूध दे रही है (Milking)</option>
+              <option value="pregnant">गाभिन (Pregnant)</option>
+              <option value="dry">सूखी (Dry)</option>
+              <option value="sick">बीमार / इलाज चल रहा है (Sick)</option>
+            </select>
+          </div>
+          <div>
+            <select id="filterCattleType" onchange="renderCattle()" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500">
+              <option value="all">सभी पशु (भैंस एवं गाय)</option>
+              <option value="Buffalo">केवल भैंस (Buffaloes)</option>
+              <option value="Cow">केवल गाय (Cows)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cattle Grid Cards -->
+      <div id="cattleGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Rendered via JS -->
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 4. KHATA BOOK TAB (किसान व ग्राहक खाता बही)                  -->
+    <!-- ============================================================ -->
+    <section id="tab-khata" class="tab-content space-y-6">
+      
+      <!-- Khata Book Header -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-black text-slate-900">डिजिटल बहीखाता (Khata Ledger)</h2>
+          <p class="text-xs text-slate-500">किसान भुगतान व ग्राहक उधारी वसूली का संपूर्ण रिकॉर्ड</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="openPaymentModal('customer', '', '', 0)" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow transition">
+            + ग्राहक से रुपया प्राप्त करें
+          </button>
+          <button onclick="openPaymentModal('farmer', '', '', 0)" class="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow transition">
+            + किसान को भुगतान करें
+          </button>
+        </div>
+      </div>
+
+      <!-- 1. Customer Ledger (ग्राहक खाता) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-blue-50/50">
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">ग्राहक खाता (Customer Accounts & Dues)</h3>
+            <p id="totalCustomerReceivableDisplay" class="text-xs text-rose-600 font-bold">मार्केट उधारी: ₹0</p>
+          </div>
+          <span class="text-xs bg-blue-100 text-blue-800 font-semibold px-2.5 py-1 rounded-full">
+            सप्लाई ग्राहक
+          </span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+                <th class="py-3 px-4">कोड</th>
+                <th class="py-3 px-4">ग्राहक नाम व पता</th>
+                <th class="py-3 px-4">दैनिक कोटा / रेट</th>
+                <th class="py-3 px-4">कुल दूध</th>
+                <th class="py-3 px-4">बकाया उधारी</th>
+                <th class="py-3 px-4 text-right">कार्य</th>
+              </tr>
+            </thead>
+            <tbody id="customerKhataTableBody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 2. Farmer Ledger (किसान खाता) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-emerald-50/50">
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">किसान खाता (Farmer & Supplier Accounts)</h3>
+            <p id="totalFarmerPayableDisplay" class="text-xs text-amber-700 font-bold">कुल देय राशि: ₹0</p>
+          </div>
+          <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2.5 py-1 rounded-full">
+            दूध संकलन किसान
+          </span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+                <th class="py-3 px-4">कोड</th>
+                <th class="py-3 px-4">किसान नाम व गांव</th>
+                <th class="py-3 px-4">पशु प्रकार</th>
+                <th class="py-3 px-4">सप्लाई दूध</th>
+                <th class="py-3 px-4">देय राशि (Payable)</th>
+                <th class="py-3 px-4 text-right">कार्य</th>
+              </tr>
+            </thead>
+            <tbody id="farmerKhataTableBody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3. Recent Payment History -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-100">
+          <h3 class="font-bold text-slate-900 text-base">हाल का लेन-देन इतिहास (Recent Payment Log)</h3>
+          <p class="text-xs text-slate-500">नकद/ऑनलाइन प्राप्त और भुगतान किए गए रुपयों का लॉग</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+                <th class="py-2.5 px-3">तारीख</th>
+                <th class="py-2.5 px-3">प्रकार</th>
+                <th class="py-2.5 px-3">नाम</th>
+                <th class="py-2.5 px-3">राशि (Amount)</th>
+                <th class="py-2.5 px-3">माध्यम</th>
+                <th class="py-2.5 px-3">विवरण / नोट</th>
+              </tr>
+            </thead>
+            <tbody id="txHistoryTableBody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 5. EXPENSES & FEED TAB (खर्चा व चारा-दाना)                   -->
+    <!-- ============================================================ -->
+    <section id="tab-expenses" class="tab-content space-y-5">
+      
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-black text-slate-900">चारा, दाना व डेयरी खर्चे</h2>
+          <p id="totalExpenseDisplay" class="text-xs text-rose-600 font-bold">कुल खर्चे: ₹0</p>
+        </div>
+        <button onclick="openExpenseModal()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow transition flex items-center space-x-1.5 self-start sm:self-auto">
+          <span>➕</span>
+          <span>नया खर्चा जोड़ें</span>
+        </button>
+      </div>
+
+      <!-- Expenses Table -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+                <th class="py-3 px-4">तारीख</th>
+                <th class="py-3 px-4">श्रेणी (Category)</th>
+                <th class="py-3 px-4">खर्च का विवरण</th>
+                <th class="py-3 px-4">किसको दिया</th>
+                <th class="py-3 px-4">भुगतान माध्यम</th>
+                <th class="py-3 px-4">राशि (₹)</th>
+                <th class="py-3 px-4 text-right">कार्य</th>
+              </tr>
+            </thead>
+            <tbody id="expensesTableBody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 6. TOOLS & SETTINGS TAB (स्मार्ट टूल्स व बैकअप)              -->
+    <!-- ============================================================ -->
+    <section id="tab-tools" class="tab-content space-y-6">
+      
+      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+        <h2 class="text-xl font-black text-slate-900">डेयरी स्मार्ट टूल्स व सेटिंग्स</h2>
+        <p class="text-xs text-slate-500">कैलकुलेटर, डेटा बैकअप और डेयरी कॉन्फ़िगरेशन</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        
+        <!-- Tool 1: FAT Milk Rate Calculator -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center space-x-2 text-emerald-800 font-bold mb-2">
+              <span class="text-xl">🧮</span>
+              <h3>फैट से दूध भाव कैलकुलेटर</h3>
+            </div>
+            <p class="text-xs text-slate-500 mb-4">फैट के अनुसार दूध का प्रति लीटर भाव निकालें</p>
+
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">पशु चुनें</label>
+                <select id="calcAnimalSelect" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2">
+                  <option value="Buffalo">भैंस (Buffalo - Rate Factor 9.0)</option>
+                  <option value="Cow">गाय (Cow - Rate Factor 7.5)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">फैट % (उदा. 6.5)</label>
+                <input type="number" step="0.1" id="calcFatInput" value="6.5" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2 font-bold">
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 p-3 bg-emerald-50 rounded-xl border border-emerald-100 text-center">
+            <span class="text-xs text-emerald-700 font-semibold">निकाला गया दूध भाव:</span>
+            <div id="calcRateResult" class="text-2xl font-black text-emerald-900 mt-1">₹ 58.50 / लीटर</div>
+          </div>
+        </div>
+
+        <!-- Tool 2: Calving Date Estimator -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center space-x-2 text-amber-800 font-bold mb-2">
+              <span class="text-xl">📅</span>
+              <h3>ब्याने की तारीख कैलकुलेटर</h3>
+            </div>
+            <p class="text-xs text-slate-500 mb-4">AI / सीमन या गर्भधारण की तिथि से डिलीवरी डेट</p>
+
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">पशु प्रकार</label>
+                <select id="toolCalvingAnimal" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2">
+                  <option value="Buffalo">भैंस (गर्भावधि: 310 दिन)</option>
+                  <option value="Cow">गाय (गर्भावधि: 280 दिन)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">AI / गर्भधारण की तारीख</label>
+                <input type="date" id="toolAiDate" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2">
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 p-3 bg-amber-50 rounded-xl border border-amber-100 text-center">
+            <span class="text-xs text-amber-800 font-semibold">संभावित डिलीवरी (ब्याने की) तारीख:</span>
+            <div id="toolCalvingResult" class="text-lg font-black text-amber-950 mt-1">तारीख चुनें...</div>
+          </div>
+        </div>
+
+        <!-- Tool 3: Daily Feed & Ration Estimator -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center space-x-2 text-teal-800 font-bold mb-2">
+              <span class="text-xl">⚖️</span>
+              <h3>प्रति भैंस दैनिक चारा-दाना</h3>
+            </div>
+            <p class="text-xs text-slate-500 mb-4">शरीर भार व दूध के अनुसार संतुलित आहार</p>
+
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">भैंस का अनुमानित वजन (kg)</label>
+                <input type="number" id="feedAnimalWeight" value="450" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">दैनिक दूध उत्पादन (Liters)</label>
+                <input type="number" id="feedMilkYield" value="14" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2">
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 p-3 bg-teal-50 rounded-xl border border-teal-100 text-xs space-y-1">
+            <div class="flex justify-between">
+              <span class="text-slate-600">सूखा चारा (भूसा):</span>
+              <b id="resDryFodder" class="text-teal-900">5.4 kg</b>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-600">हरा चारा:</span>
+              <b id="resGreenFodder" class="text-teal-900">18.0 kg</b>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-600">दाना व खली (Concentrate):</span>
+              <b id="resConcentrate" class="text-teal-900">7.1 kg</b>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Backup & Restore Data Card -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+        <div>
+          <h3 class="font-bold text-slate-900 text-base">डेटा सुरक्षा व बैकअप (Data Backup & Restore)</h3>
+          <p class="text-xs text-slate-500">
+            आपकी डेयरी का सारा हिसाब आपके ब्राउज़र में सुरक्षित रहता है। कभी भी इसका बैकअप अपने कंप्यूटर या मोबाइल में डाउनलोड कर सकते हैं।
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+          <button onclick="exportDataBackup()" class="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow transition flex items-center space-x-1.5">
+            <span>💾</span>
+            <span>कंप्यूटर में बैकअप सेव करें (Download JSON Backup)</span>
+          </button>
+
+          <button onclick="triggerImportBackup()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold shadow transition flex items-center space-x-1.5">
+            <span>📂</span>
+            <span>पुराना बैकअप रीस्टोर करें (Import Backup)</span>
+          </button>
+          <input type="file" id="backupFileInput" onchange="handleBackupFileSelected(event)" accept=".json" class="hidden">
+
+          <button onclick="resetToDemo()" class="px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-semibold transition">
+            🔄 डेमो डेटा पुनः लोड करें
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: ADD MILK ENTRY (दूध दर्ज करें)                          -->
+  <!-- ============================================================== -->
+  <div id="milkEntryModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 border border-slate-200 max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-black text-slate-900 text-lg">दूध प्रविष्टि दर्ज करें</h3>
+        <button onclick="closeModal('milkEntryModal')" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+      </div>
+
+      <form onsubmit="submitMilkEntry(event)" class="space-y-4 text-xs sm:text-sm">
+        
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">लेन-देन प्रकार (Flow)</label>
+            <select id="entryFlow" onchange="updatePartyDropdownOptions(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500">
+              <option value="collection">संकलन (किसान से ख़रीद)</option>
+              <option value="farm_production">फ़ार्म उत्पादन (अपनी भैंसों का दूध)</option>
+              <option value="sale">बिक्री (ग्राहक / सप्लाई)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">पारी (Shift)</label>
+            <select id="entryShift" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500">
+              <option value="Morning">सुबह (Morning)</option>
+              <option value="Evening">शाम (Evening)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">किसान या ग्राहक चुनें</label>
+          <select id="entryParty" onchange="onPartySelectionChange()" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500">
+            <!-- Options dynamically loaded -->
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">पशु (Animal)</label>
+            <select id="entryAnimal" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium">
+              <option value="Buffalo">भैंस (Buffalo)</option>
+              <option value="Cow">गाय (Cow)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">तारीख (Date)</label>
+            <input type="date" id="entryDate" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">मात्रा (Liters) *</label>
+            <input type="number" step="0.1" id="entryQty" placeholder="10.5" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-black text-slate-900 focus:ring-2 focus:ring-emerald-500 text-base">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">फैट % (FAT)</label>
+            <input type="number" step="0.1" id="entryFat" placeholder="7.0" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">SNF %</label>
+            <input type="number" step="0.1" id="entrySnf" placeholder="9.0" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">दर (Rate ₹/L) *</label>
+            <input type="number" step="0.1" id="entryRate" placeholder="65.0" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-bold text-slate-800">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">कुल राशि (Total)</label>
+            <input type="text" id="entryTotal" readonly class="w-full bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-xl p-2.5 font-black text-base text-center" value="₹ 0.00">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">भुगतान स्थिति (Payment Status)</label>
+          <select id="entryPaymentStatus" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold">
+            <option value="credit">उधार / खाते में बाकी (Credit)</option>
+            <option value="paid">नकद भुगतान (Cash Paid)</option>
+          </select>
+        </div>
+
+        <div class="pt-3 flex space-x-2">
+          <button type="submit" class="flex-1 py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold shadow-md transition">
+            सुरक्षित करें (Save Entry)
+          </button>
+          <button type="button" onclick="closeModal('milkEntryModal')" class="py-3 px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition">
+            रद्द करें
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: ADD / EDIT CATTLE (भैंस / पशु जोड़ें)                  -->
+  <!-- ============================================================== -->
+  <div id="cattleModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 border border-slate-200 max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 id="cattleModalTitle" class="font-black text-slate-900 text-lg">+ नई भैंस / पशु जोड़ें</h3>
+        <button onclick="closeModal('cattleModal')" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+      </div>
+
+      <form id="cattleForm" onsubmit="submitCattleForm(event)" class="space-y-3.5 text-xs sm:text-sm">
+        
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">टैग / इयर रिंग नं. *</label>
+            <input type="text" id="cattleTag" placeholder="HDF-109" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-bold uppercase">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">नाम / उपनाम *</label>
+            <input type="text" id="cattleName" placeholder="कजरी / लक्ष्मी" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">पशु प्रकार</label>
+            <select id="cattleType" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+              <option value="Buffalo">भैंस (Buffalo)</option>
+              <option value="Cow">गाय (Cow)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">नस्ल (Breed)</label>
+            <input type="text" id="cattleBreed" placeholder="मुर्राह" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ब्यांत (Lactation)</label>
+            <input type="number" id="cattleLactation" value="2" min="1" max="15" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-bold">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">वर्तमान स्थिति (Status)</label>
+          <select id="cattleStatus" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold">
+            <option value="milking">दूध दे रही है (Milking)</option>
+            <option value="pregnant">गाभिन (Pregnant)</option>
+            <option value="dry">सूखी (Dry)</option>
+            <option value="sick">बीमार / इलाज चल रहा है (Sick)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 bg-emerald-50 p-3 rounded-xl border border-emerald-100">
+          <div>
+            <label class="block font-semibold text-emerald-900 mb-1">सुबह का दूध (Liters)</label>
+            <input type="number" step="0.5" id="cattleMorningYield" placeholder="8.0" class="w-full bg-white border border-emerald-200 rounded-lg p-2 font-bold text-emerald-950">
+          </div>
+          <div>
+            <label class="block font-semibold text-emerald-900 mb-1">शाम का दूध (Liters)</label>
+            <input type="number" step="0.5" id="cattleEveningYield" placeholder="6.5" class="w-full bg-white border border-emerald-200 rounded-lg p-2 font-bold text-emerald-950">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">AI / गर्भाधान तिथि</label>
+            <input type="date" id="cattleAiDate" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">संभावित ब्याने की तिथि</label>
+            <input type="date" id="cattleExpectedCalving" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold text-amber-900">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">टीकाकरण (Vaccination)</label>
+          <input type="text" id="cattleVaccine" placeholder="FMD, HS Done" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">स्वास्थ्य व अन्य नोट</label>
+          <textarea id="cattleNotes" rows="2" placeholder="स्वस्थ, अच्छा चारा खाती है..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5"></textarea>
+        </div>
+
+        <div class="pt-3 flex space-x-2">
+          <button type="submit" class="flex-1 py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold shadow transition">
+            सुरक्षित करें (Save Cattle)
+          </button>
+          <button type="button" onclick="closeModal('cattleModal')" class="py-3 px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition">
+            रद्द करें
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: PAYMENT ENTRY (खाता लेन-देन)                           -->
+  <!-- ============================================================== -->
+  <div id="paymentModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 border border-slate-200">
+      
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 id="payModalTitle" class="font-black text-slate-900 text-base sm:text-lg">खाता भुगतान प्रविष्टि</h3>
+        <button onclick="closeModal('paymentModal')" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+      </div>
+
+      <form onsubmit="submitPayment(event)" class="space-y-3.5 text-xs sm:text-sm">
+        <input type="hidden" id="payPartyType">
+        <input type="hidden" id="payPartyId">
+        <input type="hidden" id="payPartyName">
+
+        <div>
+          <label class="block font-semibold text-slate-600 mb-1">वर्तमान बकाया बैलेंस</label>
+          <input type="text" id="payCurrentBalance" readonly class="w-full bg-slate-100 text-slate-800 font-extrabold rounded-xl p-2.5">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">भुगतान राशि (Amount ₹) *</label>
+          <input type="number" id="payAmount" required placeholder="5000" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-black text-slate-900 text-lg">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">माध्यम (Mode)</label>
+            <select id="payMode" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold">
+              <option value="Cash">नकद (Cash)</option>
+              <option value="UPI">GooglePay / PhonePe / UPI</option>
+              <option value="Bank">बैंक ट्रांसफर (NEFT/IMPS)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">तारीख (Date)</label>
+            <input type="date" id="payDate" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">नोट / विवरण</label>
+          <input type="text" id="payNotes" placeholder="साप्ताहिक भुगतान / एडवांस" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+        </div>
+
+        <div class="pt-3 flex space-x-2">
+          <button type="submit" class="flex-1 py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold shadow transition">
+            भुगतान दर्ज करें (Submit)
+          </button>
+          <button type="button" onclick="closeModal('paymentModal')" class="py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition">
+            रद्द करें
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: ADD EXPENSE (खर्चा जोड़ें)                             -->
+  <!-- ============================================================== -->
+  <div id="expenseModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 border border-slate-200">
+      
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-black text-slate-900 text-base sm:text-lg">+ नया डेयरी खर्चा जोड़ें</h3>
+        <button onclick="closeModal('expenseModal')" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+      </div>
+
+      <form id="expenseForm" onsubmit="submitExpense(event)" class="space-y-3.5 text-xs sm:text-sm">
+        
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">खर्च की श्रेणी (Category)</label>
+          <select id="expCategory" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold">
+            <option value="Feed & Fodder (दाना/चारा)">दाना / चारा / खली (Feed & Fodder)</option>
+            <option value="Veterinary / Doctor (डॉक्टर/दवा)">डॉक्टर / दवाई / सुई (Veterinary)</option>
+            <option value="Labor & Staff (मजदूरी)">मजदूरों की पगार (Labor Salary)</option>
+            <option value="Electricity & Utility (बिजली/पानी)">बिजली / डीजल / पानी (Utilities)</option>
+            <option value="Equipment & Maintenance (मरम्मत)">उपकरण व मरम्मत (Maintenance)</option>
+            <option value="Other Expense (अन्य)">अन्य विविध खर्चे (Other)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">विवरण (Description) *</label>
+          <input type="text" id="expDesc" required placeholder="उदा. सरसों की खली 4 बोरी" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-semibold">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">कुल राशि (₹) *</label>
+            <input type="number" id="expAmount" required placeholder="4500" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-black text-rose-700 text-base">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">तारीख</label>
+            <input type="date" id="expDate" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">भुगतान किसे किया</label>
+            <input type="text" id="expPaidTo" placeholder="दुकानदार / व्यक्ति नाम" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">माध्यम</label>
+            <select id="expMode" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium">
+              <option value="Cash">नकद (Cash)</option>
+              <option value="UPI">UPI (PhonePe/GPay)</option>
+              <option value="Bank">Bank Transfer</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-3 flex space-x-2">
+          <button type="submit" class="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow transition">
+            खर्चा दर्ज करें
+          </button>
+          <button type="button" onclick="closeModal('expenseModal')" class="py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition">
+            रद्द करें
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: PRINT SLIP PREVIEW (पर्ची प्रिंट व WhatsApp)           -->
+  <!-- ============================================================== -->
+  <div id="slipPreviewModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4 border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+        <h3 class="font-bold text-slate-900">दूध पर्ची (Milk Slip)</h3>
+        <button onclick="closeModal('slipPreviewModal')" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+      </div>
+
+      <!-- Printable area rendered by JS -->
+      <div id="printSlipArea"></div>
+
+      <div class="flex space-x-2 pt-2 no-print">
+        <button onclick="executePrint()" class="flex-1 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow transition flex items-center justify-center space-x-1.5">
+          <span>🖨️</span>
+          <span>पर्ची प्रिंट करें</span>
+        </button>
+        <button onclick="closeModal('slipPreviewModal')" class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition">
+          बंद करें
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- FLOATING ACTION BUTTON (Mobile Quick Add)                     -->
+  <!-- ============================================================== -->
+  <div class="fixed bottom-5 right-5 z-40 sm:hidden">
+    <button onclick="openMilkModal('collection')" class="fab-pulse w-14 h-14 bg-emerald-700 text-white rounded-full shadow-2xl flex items-center justify-center text-2xl ring-4 ring-white active:scale-95 transition">
+      🥛
+    </button>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-5 left-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+  <!-- Application Scripts -->
+  <script src="js/demoData.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

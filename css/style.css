@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Rozha+One&family=Yantramanav:wght@400;500;700;900&display=swap');
+
+:root {
+  --primary: #047857; /* Emerald 700 */
+  --primary-dark: #064e3b; /* Emerald 900 */
+  --primary-light: #10b981; /* Emerald 500 */
+  --accent-gold: #f59e0b;
+  --bg-creme: #fbfbf9;
+  --card-border: #e2e8f0;
+}
+
+body {
+  font-family: 'Outfit', 'Yantramanav', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Hindi Display Font */
+.font-hindi {
+  font-family: 'Yantramanav', sans-serif;
+}
+.font-brand {
+  font-family: 'Outfit', 'Yantramanav', sans-serif;
+}
+
+/* Badge styles */
+.badge-milking {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+.badge-pregnant {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+.badge-dry {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+.badge-sick {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* Smooth Tab Transitions */
+.tab-content {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
+}
+.tab-content.active {
+  display: block;
+  opacity: 1;
+}
+
+/* Glassmorphism Effect */
+.glass-header {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Card Hover Elevation */
+.dairy-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.dairy-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+}
+
+/* Receipt Print Styling (Thermal & A4) */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printSlipArea, #printSlipArea * {
+    visibility: visible;
+  }
+  #printSlipArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: 80mm;
+    margin: 0 auto;
+    padding: 10px;
+    font-size: 13px;
+    color: black;
+    background: white;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Floating Action Button Pulse */
+@keyframes pulse-subtle {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+.fab-pulse {
+  animation: pulse-subtle 3s infinite ease-in-out;
+}
